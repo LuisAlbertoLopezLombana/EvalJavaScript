@@ -16,7 +16,7 @@ var Calculadora = (function() {
       var botones = document.getElementsByClassName("tecla");
       //Iteración de las teclas obtenidas y adición de regla resizeButton
       for (var i = 0; i < botones.length; i++) {
-        botones[i].addEventListener('click', this.operaciones, false);
+        botones[i].addEventListener('click', this.validaciones, false);
         botones[i].className += ' resizeButton'
       }
 
@@ -33,7 +33,7 @@ var Calculadora = (function() {
     division: function(primerValor, segundoValor) {
       return primerValor / segundoValor;
     },
-    operaciones: function() {
+    validaciones: function() {
       //Función que permite controlar la operación a ejecutar.
       var tecla;
       tecla = "";
@@ -53,36 +53,57 @@ var Calculadora = (function() {
       } else if (tecla === 'on') {
         document.getElementById("display").innerHTML = "0";
         valor = "";
-      } else if (tecla === 'sign') {
-        document.getElementById("display").innerHTML = -1 * Number(valor);
-      } else if (tecla === 'raiz' || tecla === 'dividido' || tecla === 'por' || tecla === 'menos' || tecla === 'mas') {
-        document.getElementById("display").innerHTML = "";
-        if (primerValor === 0) {
-          primerValor = Number(valor)
-        }
-        operador = tecla;
-        valor = "";
-      }
-      if (tecla === 'igual' && operador !== "") {
-        if (segundoValor === 0) {
-          segundoValor = Number(valor);
-          valor = "";
-        }
-        if (operador === 'mas') {
-          document.getElementById("display").innerHTML = Calculadora.suma(primerValor, segundoValor);
-        } else if (operador === 'menos') {
-          document.getElementById("display").innerHTML = Calculadora.resta(primerValor, segundoValor);
-        } else if (operador === 'por') {
-          document.getElementById("display").innerHTML = Calculadora.multiplicacion(primerValor, segundoValor);
-        } else if (operador === 'dividido') {
-          document.getElementById("display").innerHTML = Calculadora.division(primerValor, segundoValor);
-        }
-
         primerValor = 0;
         segundoValor = 0;
-
+      } else if (tecla === 'sign') {
+        if (valor !== '') {
+          valor = -1 * Number(valor);
+          valor = valor.toString();
+          document.getElementById("display").innerHTML = valor;
+        }
+      } else if (valor.indexOf(".") === -1 && tecla === 'punto') {
+        if(valor < 0 || valor > 0){
+           valor += ".";
+        }else{
+          valor += "0.";
+        }
+        document.getElementById("display").innerHTML = valor;
+      } else if (tecla === 'dividido' || tecla === 'por' || tecla === 'menos' || tecla === 'mas') {
+        document.getElementById("display").innerHTML = "";
+        primerValor = Number(valor)
+        segundoValor = 0;
+        operador = tecla;
+        valor = "";
+      } else if (tecla === 'igual' && operador !== "") {
+        if (segundoValor === 0) {
+          segundoValor = Number(valor);
+        }
+        Calculadora.operaciones();
+        primerValor = valor;
       }
 
+    },
+    operaciones: function() {
+      if (operador === 'mas') {
+        valor = Calculadora.suma(primerValor, segundoValor).toString();
+        document.getElementById("display").innerHTML = valor;
+      } else if (operador === 'menos') {
+        valor = Calculadora.resta(primerValor, segundoValor).toString();
+        document.getElementById("display").innerHTML = valor;
+      } else if (operador === 'por') {
+        valor = Calculadora.multiplicacion(primerValor, segundoValor).toString();
+        document.getElementById("display").innerHTML = valor;
+      } else if (operador === 'dividido') {
+        if (segundoValor !== 0) {
+          valor = Calculadora.division(primerValor, segundoValor).toString();
+          document.getElementById("display").innerHTML = valor;
+        } else {
+          document.getElementById("display").innerHTML = "INFINITO";
+          valor = "";
+          primerValor = 0;
+          segundoValor = 0;
+        }
+      }
     }
   };
 })();
